@@ -1,7 +1,7 @@
 const buildContentSecurityPolicy = (nonce) => [
   "default-src 'self'",
-  `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
-  `script-src-elem 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+  `script-src 'nonce-${nonce}' 'strict-dynamic'`,
+  `script-src-elem 'nonce-${nonce}' 'strict-dynamic'`,
   "script-src-attr 'none'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' https://images.unsplash.com data:",
