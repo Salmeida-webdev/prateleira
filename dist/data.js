@@ -22,6 +22,30 @@ export const sellers = [
   { id: 's10', name: 'Oficina do Grão', person: 'Bruno Albuquerque', city: 'Areia, PB', rating: 4.9, sales: 104, products: 14, initials: 'OG', color: '#eadcca', specialty: 'Café e utensílios para preparar', verified: true },
 ];
 
+const extraStores = [
+  ['Barro de Lua','Mariana Falcão','João Pessoa, PB','Cerâmica autoral para a casa','#e8d9ce'],
+  ['Raiz do Sol','Vinícius Melo','Recife, PE','Moda consciente e tecidos naturais','#e6e4cf'],
+  ['Estúdio Mangue','Alice Tavares','Olinda, PE','Objetos com matéria e memória','#d9e5de'],
+  ['Vento Norte','Ravi Monteiro','Fortaleza, CE','Acessórios para dias de sol','#e2e3ed'],
+  ['Papel de Afeto','Luana Carvalho','Natal, RN','Papelaria feita em pequenos lotes','#f1e1da'],
+  ['Casa Jatobá','Bárbara Nunes','Campina Grande, PB','Design funcional de origem local','#e9e1d1'],
+  ['Maré Mansa','Davi Araújo','Cabedelo, PB','Peças leves inspiradas pelo litoral','#d8e8e8'],
+  ['Flor de Umbu','Rebeca Nóbrega','Areia, PB','Botânicos e cuidado cotidiano','#e4ead7'],
+  ['Traço Livre','Samuel Bezerra','Maceió, AL','Ilustração, gravura e presentes','#e9deeb'],
+  ['Canto do Barista','Nina Vasconcelos','Caruaru, PE','Café especial e acessórios de preparo','#e8ddcb'],
+  ['Pedra Clara','Guilherme Sá','Pipa, RN','Objetos para uma vida ao ar livre','#dce7df'],
+  ['Linha Serena','Amanda Paiva','Aracaju, SE','Moda confortável para todos os dias','#f0e2dd'],
+  ['Oficina do Mar','Yuri Dantas','João Pessoa, PB','Peças utilitárias feitas à mão','#dce8ed'],
+  ['Casa do Ipê','Clara Ramalho','Recife, PE','Detalhes afetivos para presentear','#ece5d2'],
+];
+const sellerColors = ['#d9e7df','#f4dfd1','#e5e2f1','#e4ead6','#f0e2c6','#d8e8ec','#f2ded9'];
+extraStores.forEach(([name, person, city, specialty, color], index) => sellers.push({
+  id: `s${String(index + 11).padStart(2,'0')}`, name, person, city, specialty, color,
+  initials: name.split(/\s+/).map((part) => part[0]).join('').slice(0,2).toUpperCase(),
+  rating: Number((4.5 + ((index * 7) % 5) / 10).toFixed(1)), sales: 62 + ((index * 47) % 290),
+  products: 8 + ((index * 5) % 27), verified: index % 5 !== 3,
+}));
+
 const photo = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=900&q=82`;
 
 export const products = [
@@ -76,7 +100,7 @@ const extraFirstNames = ['Aline', 'André', 'Bianca', 'Cecília', 'Davi', 'Elisa
 const extraLastNames = ['Azevedo', 'Barbosa', 'Cavalcanti', 'Dantas', 'Esteves', 'Farias', 'Gomes', 'Holanda', 'Ibiapina', 'Junqueira', 'Lacerda', 'Medeiros', 'Nóbrega', 'Queiroz', 'Ramalho', 'Siqueira', 'Tavares', 'Vasconcelos'];
 const demoCities = ['João Pessoa, PB', 'Recife, PE', 'Natal, RN', 'Campina Grande, PB', 'Maceió, AL', 'Fortaleza, CE', 'Olinda, PE', 'Cabedelo, PB', 'Aracaju, SE', 'Areia, PB', 'Caruaru, PE', 'Pipa, RN'];
 
-for (let i = 0; i < 88; i += 1) {
+for (let i = 0; i < 488; i += 1) {
   const first = extraFirstNames[i % extraFirstNames.length];
   const last = extraLastNames[Math.floor(i / extraFirstNames.length) % extraLastNames.length];
   const suffix = Math.floor(i / (extraFirstNames.length * extraLastNames.length)) + 1;
@@ -107,7 +131,7 @@ export const orders = [
 ];
 
 const orderStatuses = ['Entregue', 'Entregue', 'Em trânsito', 'Aguardando envio', 'Pagamento aprovado', 'Em separação', 'Cancelado'];
-for (let i = 0; i < 150; i += 1) {
+for (let i = 0; i < 788; i += 1) {
   const product = products[(i * 11 + 3) % products.length];
   const customer = customers[(i * 13 + 5) % customers.length];
   const day = 1 + (i % 26);
@@ -124,5 +148,12 @@ for (let i = 0; i < 150; i += 1) {
   });
 }
 
-export const weeklyRevenue = [28, 39, 32, 53, 47, 66, 58, 73, 61, 82, 69, 88, 76, 95, 81, 103, 92, 108, 97, 118, 106, 126, 115, 139, 123, 147, 132, 158];
+for (const customer of customers) {
+  const customerOrders = orders.filter((order) => order.customer === customer.name && order.status !== 'Cancelado');
+  customer.orders = customerOrders.length;
+  customer.total = customerOrders.reduce((sum, order) => sum + order.total, 0);
+  customer.status = customer.orders > 0 ? 'Ativa' : 'Nova';
+}
+
+export const weeklyRevenue = Array.from({ length: 90 }, (_, index) => Math.round(38 + index * 1.12 + ((index * 17) % 29) + 8 * Math.sin(index / 3)));
 
