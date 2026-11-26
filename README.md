@@ -20,6 +20,7 @@ Abra `dist/index.html` em um servidor estático local. O diretório `dist/` cont
 - 4 perfis de demonstração com menus e conteúdos diferentes; a área de vendedores inclui produtos, pedidos, desempenho e perfil da loja.
 - Exportação CSV demonstrativa nas áreas de relatórios e pedidos.
 - Painel com resumo visual da operação, fluxo de pedidos clicável, gráficos vinculados aos pedidos, comparação de 7, 28 e 90 dias, distribuição por categoria e desempenho do vendedor; pesquisa, filtros e carregamento progressivo.
+- Vitrine com categorias fotográficas, faixa animada com respeito à preferência por movimento reduzido, entrada progressiva dos produtos e visualização rápida com informações da loja, preço, favoritos e carrinho.
 
 Os dados são exemplos fictícios. As fotografias vêm de URLs do Unsplash e requerem conexão à internet.
 

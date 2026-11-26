@@ -27,14 +27,15 @@ function toast(message) {
   state.toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-function productCard(product) {
+function productCard(product, index = 0) {
   const seller = sellerById(product.sellerId);
   const favorite = state.favorites.has(product.id);
-  return `<article class="product-card" data-product="${product.id}">
+  return `<article class="product-card" data-product="${product.id}" style="--card-order:${index % 8}">
     <div class="product-media ${product.tone}">
       <img src="${product.image}" alt="${product.name}" loading="lazy" />
       <span class="product-tag">${product.tag}</span>
       <button class="favorite-button ${favorite ? 'is-favorite' : ''}" data-favorite="${product.id}" aria-label="${favorite ? 'Remover dos' : 'Adicionar aos'} favoritos" aria-pressed="${favorite}">${favorite ? '♥' : '♡'}</button>
+      <button class="quick-view-button" data-quick-view="${product.id}">Ver detalhes <span>↗</span></button>
     </div>
     <div class="product-copy">
       <div class="product-category">${product.category}</div>
@@ -58,13 +59,26 @@ function filteredProducts() {
 }
 
 function categoryTiles() {
-  return categories.map((category, index) => `<button class="category-tile" data-category="${category.id}" style="--category-color:${['#dfe9df','#f4e6dc','#e2e8ef','#ede2e8','#ece8db','#dde7e1','#f0e5d7','#e3e3ee'][index]}">
-    <span class="category-symbol">${category.icon}</span><span class="category-name">${category.name}</span><span class="category-count">${category.count} itens</span><span class="category-arrow">+</span>
-  </button>`).join('');
+  return categories.map((category, index) => {
+    const representative = products.find((product) => product.catId === category.id);
+    return `<button class="category-tile" data-category="${category.id}" aria-label="Explorar ${category.name}, ${category.count} itens demonstrativos" style="--card-order:${index};--category-color:${['#dfe9df','#f4e6dc','#e2e8ef','#ede2e8','#ece8db','#dde7e1','#f0e5d7','#e3e3ee'][index]}">
+      <img class="category-photo" src="${representative?.image || ''}" alt="" loading="lazy" /><span class="category-shade"></span><span class="category-symbol">${category.icon}</span><span class="category-name">${category.name}</span><span class="category-count">${category.count} itens</span><span class="category-arrow">↗</span>
+    </button>`;
+  }).join('');
 }
 
 function sellerCard(seller) {
   return `<article class="seller-card"><div class="seller-avatar" style="--avatar-bg:${seller.color}">${seller.initials}</div><div class="seller-info"><h3>${seller.name}${seller.verified ? '<span class="verified" title="Vendedor verificado">✓</span>' : ''}</h3><p>${seller.specialty}</p><div class="seller-meta"><span>★ ${seller.rating.toFixed(1)}</span><span>${seller.sales} vendas</span><span>${seller.city}</span></div></div><button class="seller-follow" data-follow="${seller.id}">Conhecer</button></article>`;
+}
+
+function showProductQuickView(id) {
+  const product = products.find((item) => item.id === id);
+  if (!product) return;
+  const seller = sellerById(product.sellerId);
+  const dialog = $('#quick-view-dialog');
+  const favorite = state.favorites.has(product.id);
+  $('#quick-view-content').innerHTML = `<button class="quick-view-close" data-close-quick-view aria-label="Fechar detalhes">×</button><div class="quick-view-photo"><img src="${product.image}" alt="${product.name}" /><span>${product.tag}</span></div><div class="quick-view-copy"><span class="eyebrow">${product.category} · ${product.id}</span><h2 id="quick-title">${product.name}</h2><div class="quick-view-rating"><span>★ ${product.rating.toFixed(1)}</span> (${product.reviews} avaliações demonstrativas)</div><p class="quick-view-story">Uma escolha de ${seller.name}, feita para levar mais intenção aos pequenos momentos do dia.</p><div class="quick-view-seller"><span class="seller-avatar" style="--avatar-bg:${seller.color}">${seller.initials}</span><span><b>${seller.name}</b><small>${seller.specialty} · ${seller.city}</small></span>${seller.verified ? '<span class="verified" aria-label="Vendedor verificado">✓</span>' : '<small class="seller-unverified">Perfil em análise</small>'}</div><div class="quick-view-price"><strong>${money(product.price)}</strong>${product.oldPrice ? `<del>${money(product.oldPrice)}</del><small>Preço demonstrativo</small>` : ''}</div><div class="quick-view-actions"><button class="primary-button" data-add="${product.id}">Adicionar ao carrinho <span>＋</span></button><button class="quick-favorite ${favorite ? 'is-favorite' : ''}" data-quick-favorite="${product.id}" aria-label="${favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" aria-pressed="${favorite}">${favorite ? '♥' : '♡'}</button></div><small class="quick-view-demo">Produto e avaliações fictícios para demonstração da Prateleira.</small></div>`;
+  if (!dialog.open) dialog.showModal();
 }
 
 function renderStore() {
@@ -75,7 +89,7 @@ function renderStore() {
   $('.store-footer').hidden = false;
   $('#store-link').classList.add('nav-active');
   $('#dashboard-link').classList.remove('nav-active');
-  $('#product-grid').innerHTML = list.map(productCard).join('') || '<div class="empty-state"><span>⌕</span><h3>Nenhum produto encontrado</h3><p>Tente outro termo ou escolha uma categoria diferente.</p><button class="text-button" data-clear-filters>Limpar filtros</button></div>';
+  $('#product-grid').innerHTML = list.map((product, index) => productCard(product, index)).join('') || '<div class="empty-state"><span>⌕</span><h3>Nenhum produto encontrado</h3><p>Tente outro termo ou escolha uma categoria diferente.</p><button class="text-button" data-clear-filters>Limpar filtros</button></div>';
   $('#result-count').textContent = `${list.length} ${list.length === 1 ? 'produto encontrado' : 'produtos encontrados'}`;
   $$('.filter-tab').forEach((button) => button.classList.toggle('active', button.dataset.category === state.category));
   $('#category-row').innerHTML = categoryTiles();
@@ -296,6 +310,17 @@ document.addEventListener('click', (event) => {
     $('#catalog').scrollIntoView({ behavior: 'smooth' });
     return;
   }
+  if (target.dataset.quickView) { showProductQuickView(target.dataset.quickView); return; }
+  if (target.hasAttribute('data-close-quick-view')) { $('#quick-view-dialog').close(); return; }
+  if (target.dataset.quickFavorite) {
+    const id = target.dataset.quickFavorite;
+    state.favorites.has(id) ? state.favorites.delete(id) : state.favorites.add(id);
+    showProductQuickView(id);
+    $('.quick-favorite', $('#quick-view-dialog')).focus();
+    $('#favorite-count').textContent = state.favorites.size;
+    toast(state.favorites.has(id) ? 'Produto salvo nos favoritos.' : 'Produto removido dos favoritos.');
+    return;
+  }
   if (target.dataset.favorite) {
     const id = target.dataset.favorite;
     state.favorites.has(id) ? state.favorites.delete(id) : state.favorites.add(id);
@@ -306,6 +331,7 @@ document.addEventListener('click', (event) => {
   if (target.dataset.add) {
     state.cart += 1; $('#cart-count').textContent = state.cart;
     const product = products.find(p => p.id === target.dataset.add);
+    if ($('#quick-view-dialog').open) $('#quick-view-dialog').close();
     toast(`${product.name} adicionado ao carrinho.`);
     return;
   }
@@ -332,6 +358,10 @@ document.addEventListener('click', (event) => {
   if (target.hasAttribute('data-clear-filters')) { state.category = 'todas'; state.query = ''; $('#hero-query').value = ''; renderStore(); return; }
   if (target.hasAttribute('data-cart')) { toast('Seu carrinho de demonstração contém itens de exemplo.'); return; }
   if (target.hasAttribute('data-menu-toggle')) { $('#dashboard-shell').classList.toggle('sidebar-open'); return; }
+});
+
+$('#quick-view-dialog').addEventListener('click', (event) => {
+  if (event.target === event.currentTarget) event.currentTarget.close();
 });
 
 document.addEventListener('change', (event) => {
