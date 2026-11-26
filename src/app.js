@@ -68,7 +68,11 @@ function categoryTiles() {
 }
 
 function sellerCard(seller) {
-  return `<article class="seller-card"><div class="seller-avatar" style="--avatar-bg:${seller.color}">${seller.initials}</div><div class="seller-info"><h3>${seller.name}${seller.verified ? '<span class="verified" title="Vendedor verificado">✓</span>' : ''}</h3><p>${seller.specialty}</p><div class="seller-meta"><span>★ ${seller.rating.toFixed(1)}</span><span>${seller.sales} vendas</span><span>${seller.city}</span></div></div><button class="seller-follow" data-follow="${seller.id}">Conhecer</button></article>`;
+  const cover = products.find((product) => product.sellerId === seller.id);
+  return `<article class="seller-card seller-card-visual">
+    <div class="seller-cover"><img src="${cover?.image || products[0].image}" alt="Seleção de produtos da loja ${seller.name}" loading="lazy" /><span class="seller-cover-kicker">${seller.verified ? 'MARCA VERIFICADA' : 'MARCA EM DESTAQUE'}</span><span class="seller-cover-arrow" aria-hidden="true">↗</span><span class="seller-avatar" style="--avatar-bg:${seller.color}">${seller.initials}</span></div>
+    <div class="seller-visual-copy"><div class="seller-title-row"><h3>${seller.name}${seller.verified ? '<span class="verified" title="Vendedor verificado">✓</span>' : ''}</h3><span class="seller-location">${seller.city}</span></div><p>${seller.specialty}</p><div class="seller-card-footer"><div class="seller-meta"><span>★ ${seller.rating.toFixed(1)}</span><span>${seller.sales} vendas</span></div><button class="seller-follow" data-follow="${seller.id}">Conhecer <span>↗</span></button></div></div>
+  </article>`;
 }
 
 function showProductQuickView(id) {
