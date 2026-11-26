@@ -7,6 +7,8 @@ const buildContentSecurityPolicy = (nonce) => [
   "img-src 'self' https://images.unsplash.com data:",
   "font-src 'self' https://fonts.gstatic.com data:",
   "connect-src 'self'",
+  "frame-src 'none'",
+  "child-src 'none'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
