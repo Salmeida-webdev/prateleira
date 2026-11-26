@@ -134,7 +134,9 @@ const orderStatuses = ['Entregue', 'Entregue', 'Em trânsito', 'Aguardando envio
 for (let i = 0; i < 788; i += 1) {
   const product = products[(i * 11 + 3) % products.length];
   const customer = customers[(i * 13 + 5) % customers.length];
-  const day = 1 + (i % 26);
+  const orderDate = new Date(Date.UTC(2026, 10, 26 - (i % 90)));
+  const day = orderDate.getUTCDate();
+  const month = new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' }).format(orderDate).replace('.', '');
   const hour = 8 + ((i * 5) % 12);
   const minute = (i * 17) % 60;
   orders.push({
@@ -142,10 +144,18 @@ for (let i = 0; i < 788; i += 1) {
     customer: customer.name,
     item: product.name,
     sellerId: product.sellerId,
-    date: `${String(day).padStart(2, '0')} nov, ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+    date: `${String(day).padStart(2, '0')} ${month}, ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+    createdAt: orderDate.toISOString(),
     total: product.price,
     status: orderStatuses[(i * 3) % orderStatuses.length],
   });
+}
+
+for (const order of orders) {
+  if (order.createdAt) continue;
+  const dateMatch = order.date.match(/(\d{1,2})\s+nov/i);
+  const day = order.date.startsWith('Hoje') ? 26 : order.date.startsWith('Ontem') ? 25 : Number(dateMatch?.[1] || 26);
+  order.createdAt = new Date(Date.UTC(2026, 10, day)).toISOString();
 }
 
 for (const customer of customers) {
@@ -154,6 +164,3 @@ for (const customer of customers) {
   customer.total = customerOrders.reduce((sum, order) => sum + order.total, 0);
   customer.status = customer.orders > 0 ? 'Ativa' : 'Nova';
 }
-
-export const weeklyRevenue = Array.from({ length: 90 }, (_, index) => Math.round(38 + index * 1.12 + ((index * 17) % 29) + 8 * Math.sin(index / 3)));
-

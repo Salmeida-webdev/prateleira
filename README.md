@@ -16,10 +16,10 @@ Abra `dist/index.html` em um servidor estático local. O diretório `dist/` cont
 
 - 8 categorias e 28 produtos de catálogo, cada um com uma imagem diferente.
 - 24 vendedores fictícios, com lojas, responsáveis, especialidades e localidades brasileiras.
-- 500 clientes e 800 pedidos determinísticos para explorar os filtros e indicadores do painel.
+- 500 clientes e 800 pedidos determinísticos distribuídos em 90 dias, com totais de clientes agregados do histórico.
 - 4 perfis de demonstração com menus e conteúdos diferentes; a área de vendedores inclui produtos, pedidos, desempenho e perfil da loja.
 - Exportação CSV demonstrativa nas áreas de relatórios e pedidos.
-- Painel redesenhado com cartões visuais para vendedores, clientes, produtos e pedidos, pesquisa, filtros, carregamento progressivo e gráfico com períodos selecionáveis.
+- Painel com resumo visual da operação, fluxo de pedidos clicável, gráficos vinculados aos pedidos, comparação de 7, 28 e 90 dias, distribuição por categoria e desempenho do vendedor; pesquisa, filtros e carregamento progressivo.
 
 Os dados são exemplos fictícios. As fotografias vêm de URLs do Unsplash e requerem conexão à internet.
 
